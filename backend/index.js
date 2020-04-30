@@ -9,13 +9,12 @@ const path = require('path');
 
 // Inicializar 
 const app = express();
-require('./connectionDB');
 
 //Settings
 app.set('port', process.env.PORT || 3001);
 
 // Middlewares
-app.use(morgan('dev')); 
+app.use(morgan('dev'));
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, 'public/uploads'),
@@ -28,10 +27,10 @@ app.use(multer({ storage }).single('image'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Routes
-app.use('/api/books', require('./routes/books'));
+// Configuracion global de rutas. 
+app.use('/api', require('./routes/index'));
 
-//Empezar servirdor
+//Levanto el servirdor
 app.listen(app.get('port'), () => {
   console.log(`Servidor en puerto: ${app.get('port')}`);
 });

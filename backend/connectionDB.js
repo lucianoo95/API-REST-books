@@ -4,7 +4,7 @@ const connection = mysql.createConnection({
   host: process.env.mysqlUri,
   user: process.env.mysqlUsername,
   password: process.env.mysqlPassword,
-  database: 'books'
+  database: 'api-books'
 });
 
 connection.connect((error) => {
@@ -13,3 +13,5 @@ connection.connect((error) => {
   }
   console.log('DB is connected!');
 })
+
+module.exports = connection;

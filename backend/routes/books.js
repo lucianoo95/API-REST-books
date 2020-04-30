@@ -1,12 +1,72 @@
+const connectDB = require('../connectionDB');
+const { verifyToken } = require('../middlewares/authentication');
 const { Router } = require('express');
 const router = Router();
 
-router.get('/', (req, res) => {
-  response = {
-    'ok': 'true',
-    'message': 'Hello world !!'
-  };
-  res.json(response);
+//Listar todos los libros del usuario
+router.get('/', verifyToken, (request, response) => {
+  const { id } = request.user;
+  const getBookQuery = `select books.*, favorites.date
+                        from favorites 
+                        inner join books on (favorites.book = books.id)
+                        inner join users on (favorites.user = users.id) 
+                        where favorites.user=${id} and users.state = 1`;
+
+  connectDB.query(getBookQuery, (error, result) => {
+    if (error) {
+      response.status(500).json({
+        ok: false,
+        message: error.message
+      })
+    }
+
+    response.status(200).json(result);
+  });
+
+})
+
+// Agregar un libro a la lista del usuario
+router.post('/add', verifyToken, (request, response) => {
+  const { id, name, year } = request.body;
+  const user = request.user.id;
+  const addBookQuery = `call verifyAndInsertBooks(${id},"${name}","${year}",${user},'${new Date().getTime()}')`;
+
+  connectDB.query(addBookQuery, (error, result) => {
+    if (error) {
+      response.status(500).json({
+        ok: false,
+        message: error.message
+      })
+    }
+
+    response.status(201).json({
+      ok: true,
+      message: 'Se guardo un nuevo libro.'
+    })
+  })
+
+})
+
+//Eliminar un libro de la lista del usuario
+router.delete('/delete', verifyToken, (request, response) => {
+  const { id } = request.body;
+  const user = request.user.id;
+  const deleteBookQuery = `delete from favorites where favorites.book=${id} and favorites.user=${user}`;
+
+  connectDB.query(deleteBookQuery, (error, result) => {
+    if (error) {
+      response.status(500).json({
+        ok: false,
+        message: error.message
+      })
+    }
+
+    response.status(200).json({
+      ok: true,
+      message: 'Se elimino el libro correctamente.'
+    })
+  })
+
 })
 
 module.exports = router;
