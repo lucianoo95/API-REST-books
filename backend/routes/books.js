@@ -5,12 +5,12 @@ const router = Router();
 
 //Listar todos los libros del usuario
 router.get('/', verifyToken, (request, response) => {
-  const { id } = request.user;
+  const user = request.user.id;
   const getBookQuery = `select books.*, favorites.date
                         from favorites 
-                        inner join books on (favorites.book = books.id)
+                        inner join books on (favorites.book = books.isbn)
                         inner join users on (favorites.user = users.id) 
-                        where favorites.user=${id} and users.state = 1`;
+                        where favorites.user=${user} and users.state = 1`;
 
   connectDB.query(getBookQuery, (error, result) => {
     if (error) {
@@ -27,9 +27,9 @@ router.get('/', verifyToken, (request, response) => {
 
 // Agregar un libro a la lista del usuario
 router.post('/add', verifyToken, (request, response) => {
-  const { id, name, year } = request.body;
+  const { isbn } = request.body;
   const user = request.user.id;
-  const addBookQuery = `call verifyAndInsertBooks(${id},"${name}","${year}",${user},'${new Date().getTime()}')`;
+  const addBookQuery = `call verifyAndInsertBooks(${isbn},${user},'${new Date().getTime()}')`;
 
   connectDB.query(addBookQuery, (error, result) => {
     if (error) {
@@ -48,10 +48,10 @@ router.post('/add', verifyToken, (request, response) => {
 })
 
 //Eliminar un libro de la lista del usuario
-router.delete('/delete', verifyToken, (request, response) => {
-  const { id } = request.body;
+router.delete('/delete/:isbn', verifyToken, (request, response) => {
+  const { isbn } = request.params;
   const user = request.user.id;
-  const deleteBookQuery = `delete from favorites where favorites.book=${id} and favorites.user=${user}`;
+  const deleteBookQuery = `delete from favorites where favorites.book=${isbn} and favorites.user=${user}`;
 
   connectDB.query(deleteBookQuery, (error, result) => {
     if (error) {

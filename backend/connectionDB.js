@@ -1,9 +1,9 @@
 const mysql = require('mysql');
 
 const connection = mysql.createConnection({
-  host: process.env.mysqlUri,
-  user: process.env.mysqlUsername,
-  password: process.env.mysqlPassword,
+  host: process.env.HOSTNAME,
+  user: process.env.USERNAMEDB,
+  password: process.env.PASSWORD,
   database: 'api-books'
 });
 
