@@ -1,0 +1,20 @@
+/* My rules */
+.md-20 {
+  font-size: 20px;
+}
+
+.md-17 {
+  font-size: 17px;
+}
+
+.md-15 {
+  font-size: 15px;
+}
+
+.max-size {
+  width: 15rem;
+}
+
+.w-30 {
+  width: 90px;
+}
