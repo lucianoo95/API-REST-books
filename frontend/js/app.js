@@ -1,5 +1,7 @@
+// Importar css
 import '../styles/bootstrap.css';
 import '../styles/style.css';
+// Importar clases
 import Interface from '../js/interface';
 import GoogleApi from './GoogleBooks';
 import API from './API';
@@ -18,68 +20,64 @@ const saveBookBtn = document.querySelector('#save-btn');
 let favouritesBtn, logoutBtn, deleteBook;
 
 // Funciones
-
-// Modificar funcion verifyToken
-const verifyToken = () => {
-  // Obtener token
-  const token = localStorage.getItem('token');
-  // comprobar que el token exista.
-  if (token) {
-    // 
-    favouritesBtn = document.querySelector('#fav-btn').addEventListener('click', () => {
-      // guardar coleccion en un array
-      let books = [];
-      // Listar favoritos
-      apiBackend.getCollectionBooks()
-        .then(async data => {
-          if (data.length === 0) {
-            document.querySelector('#title-favorites').textContent = 'Aún no hay libros guardados';
-            const divBooks = document.querySelector('#books-cards');
-            ui.cleanDiv(divBooks);
-          } else {
-            // obtener libro mediante isbn
-            for (let book of data) {
-              const bookInfo = await googleBooks.getVolume('isbn:', book.isbn);
-              // guardar books en el array
-              books.push(bookInfo[0]);
-            }
-            // mostrar resultados
-            ui.printSearchResult(books, 'Mis favoritos', '', 'hidden');
-            // Codigo inexplicable
-            // Agregar un listener para cada boton de 'eliminar libro', codigo rancio
-            const btnsDelete = Array.from(document.querySelectorAll('[data-id="delete-btn"]'));
-            // recorrer array de botones
-            btnsDelete.map(element => {
-              element.addEventListener('click', () => {
-                // seleccionar isbn del libro
-                const isbn = element.dataset.isbn;
-                // eliminar carta del html
-                ui.removeCard(isbn);
-                // eliminar libro de la coleccion del usuario
-                apiBackend.deleteBook(isbn)
-                  .then(data => {
-                    ui.showMessage(`${data.message}`, 'alert-warning', 'feedback', 'message-save-book');
-                  })
-                  .catch(error => {
-                    throw error;
-                  })
-              })
-            })
-
+// Agregar nuevos listenners para los nuevos botones 
+const addListenners = () => {
+  //Boton dentro del dropdown del usuario que lista los favoritos del usuario
+  favouritesBtn = document.querySelector('#fav-btn').addEventListener('click', () => {
+    // guardar coleccion en un array
+    let books = [];
+    // Listar favoritos
+    apiBackend.getCollectionBooks()
+      .then(async data => {
+        // Si la lista esta vacia que muestre un mensaje
+        if (data.length === 0) {
+          document.querySelector('#title-favorites').textContent = 'Aún no hay libros guardados';
+          const divBooks = document.querySelector('#books-cards');
+          ui.cleanDiv(divBooks);
+        } else {
+          // obtener libro mediante isbn
+          for (let book of data) {
+            const bookInfo = await googleBooks.getVolume('isbn:', book.isbn);
+            // guardar books en el array
+            books.push(bookInfo[0]);
           }
+          // mostrar resultados
+          ui.printSearchResult(books, 'Mis favoritos', '', 'hidden');
+          // Codigo inexplicable
+          // Agregar un listener para cada boton de 'eliminar libro', codigo rancio
+          const btnsDelete = Array.from(document.querySelectorAll('[data-id="delete-btn"]'));
+          // recorrer array de botones
+          btnsDelete.map(element => {
+            element.addEventListener('click', () => {
+              // seleccionar isbn del libro
+              const isbn = element.dataset.isbn;
+              // eliminar carta del html
+              ui.removeCard(isbn);
+              // eliminar libro de la coleccion del usuario
+              apiBackend.deleteBook(isbn)
+                .then(data => {
+                  ui.showMessage(`${data.message}`, 'alert-warning', 'feedback', 'message-save-book');
+                })
+                .catch(error => {
+                  throw error;
+                })
+            })
+          })
 
-        })
-        .catch(error => {
-          throw error;
-        })
-    })
+        }
 
-    logoutBtn = document.querySelector('#logout-btn').addEventListener('click', () => {
-      // Cerrar sesion
-      ui.signOff();
-    })
+      })
+      .catch(error => {
+        throw error;
+      })
+  })
 
-  }
+  // Btn para cerrar sesion
+  logoutBtn = document.querySelector('#logout-btn').addEventListener('click', () => {
+    // Cerrar sesion
+    ui.signOff();
+  })
+
 }
 
 //Listenners
@@ -145,7 +143,7 @@ loginBtn.addEventListener('click', (e) => {
         // Ocultar modal
         ui.closeModal('login');
 
-        verifyToken();
+        addListenners();
       })
       .catch(error => {
         throw error;
