@@ -4,7 +4,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const express = require('express');
 const morgan = require('morgan');
-const multer = require('multer');
+// const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
 
@@ -24,10 +24,10 @@ const storage = multer.diskStorage({
   }
 });
 
-app.use(multer({ storage }).single('image'));
+// app.use(multer({ storage }).single('image'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors()); 
+app.use(cors());
 
 // Configuracion global de rutas. 
 app.use('/api', require('./routes/index'));
