@@ -1,7 +1,7 @@
 export default class API {
 
   constructor() {
-    this.url = 'http://localhost:4000/api/';
+    this.url = '/api/';
   }
 
   // Obtener token de Autenticacion en caso de estar registrado
